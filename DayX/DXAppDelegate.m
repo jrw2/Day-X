@@ -18,7 +18,7 @@
     
     // Override point for customization after application launch.
     DXDetailViewController *detailViewController = [DXDetailViewController new];
-    UINavigation *navigationController = [[UINavigationController alloc] initWithRootViewController:detailViewController];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:detailViewController];
     self.window.rootViewController = navigationController;
     
     self.window.backgroundColor = [UIColor whiteColor];
