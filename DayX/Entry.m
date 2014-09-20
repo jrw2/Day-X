@@ -16,7 +16,8 @@
     if (self) {
         self.title = dictionary[titleKey];
         self.text = dictionary[textKey];
-        self.timestamp = dictionary[timestampKey];
+        self.createdTimestamp = dictionary[createdTimestampKey];
+        self.modifiedTimestamp = dictionary[modifiedTimestampKey];
     }
     return self;
 }
@@ -30,8 +31,11 @@
     if (self.text) {
         [entryDictionary setObject:self.text forKey:textKey];
     }
-    if (self.timestamp) {
-        [entryDictionary setObject:self.timestamp forKey:timestampKey];
+    if (self.createdTimestamp) {
+        [entryDictionary setObject:self.createdTimestamp forKey:createdTimestampKey];
+    }
+    if (self.modifiedTimestamp) {
+        [entryDictionary setObject:self.modifiedTimestamp forKey:modifiedTimestampKey];
     }
     
     return entryDictionary;
