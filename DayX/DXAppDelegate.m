@@ -2,12 +2,12 @@
 //  DXAppDelegate.m
 //  DayX
 //
-//  Created by Joshua Howland on 5/30/14.
-//  Copyright (c) 2014 DevMountain. All rights reserved.
+//  Created by James Westmoreland on 9/16/14.
+//  Copyright (c) 2014 Custom Computers & Consulting. All rights reserved.
 //
 
 #import "DXAppDelegate.h"
-#import "DXDetailViewController.h"
+#import "DXListViewController.h"
 
 
 @implementation DXAppDelegate
@@ -17,9 +17,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     // Override point for customization after application launch.
-    DXDetailViewController *detailViewController = [DXDetailViewController new];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:detailViewController];
-    self.window.rootViewController = navigationController;
+    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[DXListViewController new]];
     
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
