@@ -15,6 +15,6 @@ static NSString * const EntryKey = @"entry";
 
 @interface DXDetailViewController : UIViewController
 
-- (void)updateWithDictionary:(NSDictionary *)dictionary;
+- (void)updateWithEntry:(Entry *)entry;
 
 @end

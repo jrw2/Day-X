@@ -30,6 +30,8 @@
 {
     [super viewDidLoad];
 
+    self.title = @"DayX";
+    
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(add:)];
     self.navigationItem.rightBarButtonItem = addButton;
     
@@ -48,7 +50,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     DXDetailViewController *detailViewController = [DXDetailViewController new];
-    [detailViewController updateWithDictionary:[EntryController sharedInstance].entries[indexPath.row]];
+    [detailViewController updateWithEntry:[EntryController sharedInstance].entries[indexPath.row]];
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 

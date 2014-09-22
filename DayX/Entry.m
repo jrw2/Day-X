@@ -37,7 +37,6 @@
     if (self.modifiedTimestamp) {
         [entryDictionary setObject:self.modifiedTimestamp forKey:modifiedTimestampKey];
     }
-    
     return entryDictionary;
 }
 

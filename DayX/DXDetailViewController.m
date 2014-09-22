@@ -13,6 +13,8 @@
 
 @property (strong, nonatomic) UITextField *titleField;
 @property (strong, nonatomic) UITextView *textNote;
+@property (strong, nonatomic) NSDate *creationDate;
+@property (strong, nonatomic) NSDate *modificationDate;
 @property (strong, nonatomic) Entry *entry;
 
 @end
@@ -23,7 +25,11 @@
 {
     [super viewDidLoad];
     
-    self.title = @"DayX";
+    self.creationDate = [NSDate new];
+    NSLog(@"Creation date: %@", self.creationDate);
+    
+    self.modificationDate = [NSDate new];
+    NSLog(@"Modification date: %@", self.modificationDate);
     
     self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 70, self.view.frame.size.width - 70, 70)];
     self.titleField.text = @"";
@@ -51,13 +57,16 @@
 {
     self.titleField.text = @"";
     self.textNote.text = @"";
+    self.creationDate = [NSDate new];
+    self.modificationDate = [NSDate new];
     return YES;
 }
 
 - (void)save:(id)sender
 {
-    Entry *entry = [[Entry alloc] initWithDictionary:@{titleKey: self.titleField.text, textKey: self.textNote.text}];
-    if (self.entry) {
+    self.modificationDate = [NSDate new];
+    Entry *entry = [[Entry alloc] initWithDictionary:@{titleKey: self.titleField.text, textKey: self.textNote.text, createdTimestampKey: self.creationDate, modifiedTimestampKey: self.modificationDate}];
+    if ( self.entry) {
         [[EntryController sharedInstance] replaceEntry:self.entry withEntry:entry];
     } else {
         [[EntryController sharedInstance] addEntry:entry];
@@ -70,6 +79,8 @@
     self.entry = entry;
     self.titleField.text = entry.title;
     self.textNote.text = entry.text;
+    self.creationDate = entry.createdTimestamp;
+    self.modificationDate = entry.modifiedTimestamp;
 }
 
 @end
