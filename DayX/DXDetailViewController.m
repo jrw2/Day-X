@@ -25,10 +25,10 @@
 {
     [super viewDidLoad];
     
-    self.creationDate = [NSDate new];
+    self.creationDate = [NSDate date];
     NSLog(@"Creation date: %@", self.creationDate);
     
-    self.modificationDate = [NSDate new];
+    self.modificationDate = [NSDate date];
     NSLog(@"Modification date: %@", self.modificationDate);
     
     self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 70, self.view.frame.size.width - 70, 70)];
