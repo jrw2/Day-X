@@ -11,11 +11,14 @@
 
 @interface DXDetailViewController () <UITextViewDelegate, UITextFieldDelegate>
 
+@property (strong, nonatomic) UILabel *dateInformation;
 @property (strong, nonatomic) UITextField *titleField;
+@property (strong, nonatomic) UIButton *clearButton;
 @property (strong, nonatomic) UITextView *textNote;
 @property (strong, nonatomic) NSDate *creationDate;
 @property (strong, nonatomic) NSDate *modificationDate;
 @property (strong, nonatomic) Entry *entry;
+@property (strong, nonatomic) NSDateFormatter *dateFormatter;
 
 @end
 
@@ -25,20 +28,40 @@
 {
     [super viewDidLoad];
     
-    self.creationDate = [NSDate date];
-    NSLog(@"Creation date: %@", self.creationDate);
+    if (!self.dateFormatter) {
+        self.dateFormatter = [NSDateFormatter new];
+        self.dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss zzz";
+    }
+    if (!self.creationDate) {
+        self.creationDate = [NSDate date];
+    }
+    if (!self.modificationDate) {
+        self.modificationDate = [NSDate date];
+    }
     
-    self.modificationDate = [NSDate date];
-    NSLog(@"Modification date: %@", self.modificationDate);
+    self.dateInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, self.view.frame.size.width - 10, 44)];
+    NSString *crDateStr = [self.dateFormatter stringFromDate:self.creationDate];
+    NSString *moDateStr = [self.dateFormatter stringFromDate:self.modificationDate];
+    NSString *dateString = [[NSString alloc] initWithFormat:@"Date created: %@    Date Modified: %@", crDateStr, moDateStr];
+    self.dateInformation.text = dateString;
+    [self.view addSubview:self.dateInformation];
     
-    self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 70, self.view.frame.size.width - 70, 70)];
-    self.titleField.text = @"";
-    self.titleField.clearButtonMode = UITextFieldViewModeAlways;
+    self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 125, self.view.frame.size.width - 90, 64)];
+    if (!self.titleField.text) {
+        self.titleField.text = @"";
+    }
     self.titleField.delegate = self;
     [self.view addSubview:self.titleField];
     
-    self.textNote = [[UITextView alloc] initWithFrame:CGRectMake(10, 145, self.view.frame.size.width - 10, self.view.frame.size.height - 145)];
-    self.textNote.text = @"";
+    self.clearButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 75, 125, 64, 64)];
+    [self.clearButton setTitle:@"Clear Fields" forState:UIControlStateNormal];
+    [self.clearButton addTarget:self action:@selector(clear:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.clearButton];
+    
+    self.textNote = [[UITextView alloc] initWithFrame:CGRectMake(10, 200, self.view.frame.size.width - 10, self.view.frame.size.height - 200)];
+    if (!self.textNote.text) {
+        self.textNote.text = @"";
+    }
     self.textNote.delegate = self;
     [self.view addSubview:self.textNote];
     
@@ -53,13 +76,12 @@
 }
 
 // called when clear button pressed. return NO to ignore
-- (BOOL)textFieldShouldClear:(UITextField *)textField
+- (void)clear:(id *)sender
 {
     self.titleField.text = @"";
     self.textNote.text = @"";
     self.creationDate = [NSDate new];
     self.modificationDate = [NSDate new];
-    return YES;
 }
 
 - (void)save:(id)sender
