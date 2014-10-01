@@ -32,11 +32,12 @@
         self.dateFormatter = [NSDateFormatter new];
         self.dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss zzz";
     }
-    if (!self.creationDate) {
+    
+    if (!self.entry) {
         self.creationDate = [NSDate date];
-    }
-    if (!self.modificationDate) {
         self.modificationDate = [NSDate date];
+        self.titleField.text = @"";
+        self.textNote.text = @"";
     }
     
     self.dateInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, self.view.frame.size.width - 10, 44)];
@@ -47,9 +48,6 @@
     [self.view addSubview:self.dateInformation];
     
     self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 125, self.view.frame.size.width - 90, 64)];
-    if (!self.titleField.text) {
-        self.titleField.text = @"";
-    }
     self.titleField.delegate = self;
     [self.view addSubview:self.titleField];
     
@@ -59,9 +57,6 @@
     [self.view addSubview:self.clearButton];
     
     self.textNote = [[UITextView alloc] initWithFrame:CGRectMake(10, 200, self.view.frame.size.width - 10, self.view.frame.size.height - 200)];
-    if (!self.textNote.text) {
-        self.textNote.text = @"";
-    }
     self.textNote.delegate = self;
     [self.view addSubview:self.textNote];
     
@@ -88,7 +83,7 @@
 {
     self.modificationDate = [NSDate new];
     Entry *entry = [[Entry alloc] initWithDictionary:@{titleKey: self.titleField.text, textKey: self.textNote.text, createdTimestampKey: self.creationDate, modifiedTimestampKey: self.modificationDate}];
-    if ( self.entry) {
+    if (self.entry) {
         [[EntryController sharedInstance] replaceEntry:self.entry withEntry:entry];
     } else {
         [[EntryController sharedInstance] addEntry:entry];
