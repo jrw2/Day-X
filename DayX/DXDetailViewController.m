@@ -28,6 +28,8 @@
 {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor darkGrayColor];
+    
     if (!self.dateFormatter) {
         self.dateFormatter = [NSDateFormatter new];
         self.dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss zzz";
@@ -36,8 +38,9 @@
     if (!self.entry) {
         self.creationDate = [NSDate date];
         self.modificationDate = [NSDate date];
-        self.titleField.text = @"";
-        self.textNote.text = @"";
+    } else {
+        self.creationDate = self.entry.createdTimestamp;
+        self.modificationDate = self.entry.modifiedTimestamp;
     }
     
     self.dateInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, self.view.frame.size.width - 10, 44)];
@@ -47,16 +50,28 @@
     self.dateInformation.text = dateString;
     [self.view addSubview:self.dateInformation];
     
-    self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 125, self.view.frame.size.width - 90, 64)];
+    self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 125, self.view.frame.size.width - 100, 64)];
+    if (!self.entry) {
+        self.titleField.text = @"";
+    } else {
+        self.titleField.text = self.entry.title;
+    }
+    self.titleField.backgroundColor = [UIColor whiteColor];
     self.titleField.delegate = self;
     [self.view addSubview:self.titleField];
     
-    self.clearButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 75, 125, 64, 64)];
-    [self.clearButton setTitle:@"Clear Fields" forState:UIControlStateNormal];
+    self.clearButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 85, 125, 64, 64)];
+    [self.clearButton setTitle:@"Clear" forState:UIControlStateNormal];
     [self.clearButton addTarget:self action:@selector(clear:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.clearButton];
     
-    self.textNote = [[UITextView alloc] initWithFrame:CGRectMake(10, 200, self.view.frame.size.width - 10, self.view.frame.size.height - 200)];
+    self.textNote = [[UITextView alloc] initWithFrame:CGRectMake(10, 200, self.view.frame.size.width - 20, self.view.frame.size.height - 220)];
+    if (!self.entry) {
+        self.textNote.text = @"";
+    } else {
+        self.textNote.text = self.entry.text;
+    }
+    self.textNote.backgroundColor = [UIColor whiteColor];
     self.textNote.delegate = self;
     [self.view addSubview:self.textNote];
     
@@ -94,10 +109,6 @@
 - (void)updateWithEntry:(Entry *)entry
 {
     self.entry = entry;
-    self.titleField.text = entry.title;
-    self.textNote.text = entry.text;
-    self.creationDate = entry.createdTimestamp;
-    self.modificationDate = entry.modifiedTimestamp;
 }
 
 @end
