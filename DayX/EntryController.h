@@ -12,11 +12,10 @@
 
 @interface EntryController : NSObject
 
-@property (strong, nonatomic, readonly) NSArray *entries;
-
 + (EntryController *)sharedInstance;
-- (void)addEntry:(Entry *)entry;
+- (NSArray *)entries;
+- (void)addEntryWithTitle:(NSString *)title text:(NSString *)text dateCreated:(NSDate *)dateCreated dateModified:(NSDate *)dateModified;
 - (void)removeEntry:(Entry *)entry;
-- (void)replaceEntry:(Entry *)oldEntry withEntry:(Entry *)newEntry;
+- (void)synchronize;
 
 @end
