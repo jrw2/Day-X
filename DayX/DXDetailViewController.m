@@ -15,8 +15,8 @@
 @property (strong, nonatomic) UITextField *titleField;
 @property (strong, nonatomic) UIButton *clearButton;
 @property (strong, nonatomic) UITextView *textNote;
-@property (strong, nonatomic) NSDate *creationDate;
-@property (strong, nonatomic) NSDate *modificationDate;
+@property (strong, nonatomic) NSDate *dateCreated;
+@property (strong, nonatomic) NSDate *dateModified;
 @property (strong, nonatomic) Entry *entry;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 
@@ -36,16 +36,16 @@
     }
     
     if (!self.entry) {
-        self.creationDate = [NSDate date];
-        self.modificationDate = [NSDate date];
+        self.dateCreated = [NSDate date];
+        self.dateModified = [NSDate date];
     } else {
-        self.creationDate = self.entry.createdTimestamp;
-        self.modificationDate = self.entry.modifiedTimestamp;
+        self.dateCreated = self.entry.dateCreated;
+        self.dateModified = self.entry.dateModified;
     }
     
     self.dateInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, self.view.frame.size.width - 10, 44)];
-    NSString *crDateStr = [self.dateFormatter stringFromDate:self.creationDate];
-    NSString *moDateStr = [self.dateFormatter stringFromDate:self.modificationDate];
+    NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
+    NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
     NSString *dateString = [[NSString alloc] initWithFormat:@"Date created: %@    Date Modified: %@", crDateStr, moDateStr];
     self.dateInformation.text = dateString;
     [self.view addSubview:self.dateInformation];
@@ -85,23 +85,26 @@
     return YES;
 }
 
-// called when clear button pressed. return NO to ignore
+// called when clear button pressed.
 - (void)clear:(id *)sender
 {
     self.titleField.text = @"";
     self.textNote.text = @"";
-    self.creationDate = [NSDate new];
-    self.modificationDate = [NSDate new];
+    self.dateCreated = [NSDate new];
+    self.dateModified = [NSDate new];
 }
 
 - (void)save:(id)sender
 {
-    self.modificationDate = [NSDate new];
-    Entry *entry = [[Entry alloc] initWithDictionary:@{titleKey: self.titleField.text, textKey: self.textNote.text, createdTimestampKey: self.creationDate, modifiedTimestampKey: self.modificationDate}];
+    self.dateModified = [NSDate new];
     if (self.entry) {
-        [[EntryController sharedInstance] replaceEntry:self.entry withEntry:entry];
+        self.entry.title = self.titleField.text;
+        self.entry.text = self.textNote.text;
+        self.entry.dateCreated = self.dateCreated;
+        self.entry.dateModified = self.dateModified;
+        [[EntryController sharedInstance] synchronize];
     } else {
-        [[EntryController sharedInstance] addEntry:entry];
+        [[EntryController sharedInstance] addEntryWithTitle:self.titleField.text text:self.textNote.text dateCreated:self.dateCreated dateModified:self.dateModified];
     }
     [self.navigationController popViewControllerAnimated:YES];
 }

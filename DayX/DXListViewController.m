@@ -42,6 +42,7 @@
     
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self;
+    [self.tableView setEditing:YES];
     [self.dataSource registerTableView:self.tableView];
 }
 

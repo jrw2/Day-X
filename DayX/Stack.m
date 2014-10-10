@@ -61,7 +61,7 @@
 
 - (NSURL*)modelURL
 {
-    return [[NSBundle mainBundle] URLForResource:@"Model" withExtension:@"momd"];
+    return [[NSBundle mainBundle] URLForResource:@"DXModel" withExtension:@"momd"];
 }
 
 - (NSManagedObjectModel*)managedObjectModel

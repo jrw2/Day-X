@@ -101,9 +101,9 @@
 				2BCAAFBA19DE329F00BF4DB0 /* Stack.m */,
 				2B304B4319DEEE01002591BD /* Entry.h */,
 				2B304B4419DEEE02002591BD /* Entry.m */,
-				2BCAAFC019DE567C00BF4DB0 /* DXModel.xcdatamodeld */,
 				2BC3B19B19CD197B00EF0B36 /* EntryController.h */,
 				2BC3B19C19CD199C00EF0B36 /* EntryController.m */,
+				2BCAAFC019DE567C00BF4DB0 /* DXModel.xcdatamodeld */,
 			);
 			name = Model;
 			sourceTree = "<group>";

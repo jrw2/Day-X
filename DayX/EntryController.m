@@ -42,7 +42,7 @@
     [self synchronize];
 }
 
-- (void)removeEntry:(NSDictionary *)entry
+- (void)removeEntry:(Entry *)entry
 {
     [entry.managedObjectContext deleteObject:entry];
     [self synchronize];
