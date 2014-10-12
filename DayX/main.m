@@ -2,8 +2,8 @@
 //  main.m
 //  DayX
 //
-//  Created by Joshua Howland on 5/30/14.
-//  Copyright (c) 2014 DevMountain. All rights reserved.
+//  Created by James Westmoreland on 9/16/14.
+//  Copyright (c) 2014 Custom Computers & Consulting. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

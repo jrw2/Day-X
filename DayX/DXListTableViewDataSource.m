@@ -16,29 +16,37 @@
     [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:NSStringFromClass([UITableViewCell class])];
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 2;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [EntryController sharedInstance].entries.count;
+    if (section == 0)
+        return 1;
+    else
+        return [EntryController sharedInstance].entries.count;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableViefw commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        //logic to delete...
-    }
+    if (indexPath.section == 0)
+        return NO;
+    else
+        return YES;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([UITableViewCell class])];
     
-    Entry *entry = [EntryController sharedInstance].entries[indexPath.row];
-    cell.textLabel.text = entry.title;
+    if (indexPath.section == 0) {
+        cell.textLabel.text = @"Add Entry";
+    } else {
+        Entry *entry = [EntryController sharedInstance].entries[indexPath.row];
+        cell.textLabel.text = entry.title;
+    }
     
     return cell;
 }

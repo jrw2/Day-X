@@ -32,8 +32,8 @@
 
     self.title = @"DayX";
     
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(add:)];
-    self.navigationItem.rightBarButtonItem = addButton;
+    UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit:)];
+    self.navigationItem.rightBarButtonItem = editButton;
     
     self.dataSource = [DXListTableViewDataSource new];
     
@@ -42,7 +42,7 @@
     
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self;
-    [self.tableView setEditing:YES];
+    [self.tableView setEditing:NO];
     [self.dataSource registerTableView:self.tableView];
 }
 
@@ -51,14 +51,35 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     DXDetailViewController *detailViewController = [DXDetailViewController new];
-    [detailViewController updateWithEntry:[EntryController sharedInstance].entries[indexPath.row]];
+    if (indexPath.section != 0) {
+        [detailViewController updateWithEntry:[EntryController sharedInstance].entries[indexPath.row]];
+    }
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
-- (void)add:(id)sender
+- (void)tableView:(UITableView *)tableViefw commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DXDetailViewController *detailViewController = [DXDetailViewController new];
-    [self.navigationController pushViewController:detailViewController animated:YES];
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        Entry *entry = [EntryController sharedInstance].entries[indexPath.row];
+        [[EntryController sharedInstance] removeEntry:entry];
+        [self.tableView reloadData];
+    }
+}
+
+- (void)edit:(id)sender
+{
+    [self.tableView setEditing:YES];
+    
+    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
+    self.navigationItem.rightBarButtonItem = doneButton;
+}
+
+- (void)done:(id)sender
+{
+    [self.tableView setEditing:NO];
+    
+    UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit:)];
+    self.navigationItem.rightBarButtonItem = editButton;
 }
 
 @end
