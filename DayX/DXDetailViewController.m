@@ -82,16 +82,33 @@
     self.textNote.delegate = self;
     [self.view addSubview:self.textNote];
     
+    self.clearButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 150, self.view.frame.size.height - 75, 64, 64)];
+    [self.clearButton setTitle:@"Clear" forState:UIControlStateNormal];
+    [self.clearButton addTarget:self action:@selector(clear:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.clearButton];
+
+    self.deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 75, self.view.frame.size.height - 75, 64, 64)];
+    [self.deleteButton setTitle:@"Delete" forState:UIControlStateNormal];
+    [self.deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.deleteButton];
+
     if (!self.entry) {
-        self.clearButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 75, self.view.frame.size.height - 75, 64, 64)];
-        [self.clearButton setTitle:@"Clear" forState:UIControlStateNormal];
-        [self.clearButton addTarget:self action:@selector(clear:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:self.clearButton];
+        self.deleteButton.enabled = NO;
     } else {
-        self.deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 75, self.view.frame.size.height - 75, 64, 64)];
-        [self.deleteButton setTitle:@"Delete" forState:UIControlStateNormal];
-        [self.deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:self.deleteButton];
+        self.clearButton.enabled = NO;
+    }
+    
+    [self showDoneButton:NO];
+}
+
+- (void)showDoneButton:(BOOL)show
+{
+    if (show) {
+        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(done:)];
+        self.navigationItem.rightBarButtonItem = doneButton;
+    } else {
+        UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
+        self.navigationItem.rightBarButtonItem = saveButton;
     }
 }
 
@@ -101,9 +118,6 @@
     
     self.dataHasChanged = YES;
     
-    UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
-    self.navigationItem.rightBarButtonItem = saveButton;
-    
     if (!self.entry) {
         NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
         NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
@@ -111,13 +125,14 @@
         self.dateInformation.text = dateString;
     }
     
+    [self showDoneButton:NO];
+    
     return YES;
 }
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(done:)];
-    self.navigationItem.rightBarButtonItem = doneButton;
+    [self showDoneButton:YES];
     
     return YES;
 }
@@ -127,9 +142,8 @@
     if (self.entry) {
         self.dataHasChanged = YES;
     }
-
-    UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
-    self.navigationItem.rightBarButtonItem = saveButton;
+    
+    [self showDoneButton:NO];
     
     return YES;
 }
