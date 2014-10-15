@@ -68,6 +68,7 @@
     } else {
         self.titleField.text = @"";
     }
+    self.titleField.returnKeyType = UIReturnKeyDone;
     self.titleField.backgroundColor = [UIColor whiteColor];
     self.titleField.delegate = self;
     [self.view addSubview:self.titleField];
@@ -155,34 +156,32 @@
 
 - (void)clear:(id *)sender
 {
-    if (!self.entry) {
-        self.titleField.text = @"";
-        self.textNote.text = @"";
-        self.dateCreated = [NSDate new];
-        self.dateModified = [NSDate new];
-    }
+    self.titleField.text = @"";
+    self.textNote.text = @"";
+    self.dateCreated = [NSDate new];
+    self.dateModified = [NSDate new];
 }
 
 - (void)delete:(id)sender
 {
-    if (self.entry) {
-        [[EntryController sharedInstance] removeEntry:self.entry];
-        [[EntryController sharedInstance] synchronize];
-        [self.navigationController popViewControllerAnimated:YES];
-    }
+    [[EntryController sharedInstance] removeEntry:self.entry];
+    [[EntryController sharedInstance] synchronize];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)save:(id)sender
 {
-    self.dateModified = [NSDate new];
-    if (self.entry) {
-        self.entry.title = self.titleField.text;
-        self.entry.text = self.textNote.text;
-        self.entry.dateCreated = self.dateCreated;
-        self.entry.dateModified = self.dateModified;
-        [[EntryController sharedInstance] synchronize];
-    } else {
-        [[EntryController sharedInstance] addEntryWithTitle:self.titleField.text text:self.textNote.text dateCreated:self.dateCreated dateModified:self.dateModified];
+    if (self.dataHasChanged) {
+        self.dateModified = [NSDate new];
+        if (self.entry) {
+            self.entry.title = self.titleField.text;
+            self.entry.text = self.textNote.text;
+            self.entry.dateCreated = self.dateCreated;
+            self.entry.dateModified = self.dateModified;
+            [[EntryController sharedInstance] synchronize];
+        } else {
+            [[EntryController sharedInstance] addEntryWithTitle:self.titleField.text text:self.textNote.text dateCreated:self.dateCreated dateModified:self.dateModified];
+        }
     }
     [self.navigationController popViewControllerAnimated:YES];
 }
