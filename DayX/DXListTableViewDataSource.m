@@ -23,18 +23,20 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0)
+    if (section == 0) {
         return 1;
-    else
+    } else {
         return [EntryController sharedInstance].entries.count;
+    }
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0)
+    if (indexPath.section == 0) {
         return NO;
-    else
+    } else {
         return YES;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -47,6 +49,7 @@
         Entry *entry = [EntryController sharedInstance].entries[indexPath.row];
         cell.textLabel.text = entry.title;
     }
+//    cell.textLabel.accessibilityTraits |= UIAccessibilityTraitButton;
     
     return cell;
 }

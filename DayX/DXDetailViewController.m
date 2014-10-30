@@ -164,9 +164,22 @@
 
 - (void)delete:(id)sender
 {
-    [[EntryController sharedInstance] removeEntry:self.entry];
-    [[EntryController sharedInstance] synchronize];
-    [self.navigationController popViewControllerAnimated:YES];
+    UIAlertView *alertView = [[UIAlertView alloc]
+                              initWithTitle:@"Delete Confirmation"
+                              message:@"Delete this entry?"
+                              delegate:self
+                              cancelButtonTitle:@"No"
+                              otherButtonTitles:@"Yes", nil];
+    [alertView show];
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 1) {
+        [[EntryController sharedInstance] removeEntry:self.entry];
+        [[EntryController sharedInstance] synchronize];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 - (void)save:(id)sender
