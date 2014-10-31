@@ -69,6 +69,7 @@
 - (void)edit:(id)sender
 {
     [self.tableView setEditing:YES];
+    [self.tableView reloadData];
     
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
     self.navigationItem.rightBarButtonItem = doneButton;
@@ -77,6 +78,7 @@
 - (void)done:(id)sender
 {
     [self.tableView setEditing:NO];
+    [self.tableView reloadData];
     
     UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit:)];
     self.navigationItem.rightBarButtonItem = editButton;

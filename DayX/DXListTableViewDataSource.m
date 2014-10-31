@@ -45,11 +45,16 @@
     
     if (indexPath.section == 0) {
         cell.textLabel.text = @"Add Entry";
+        cell.textLabel.accessibilityTraits |= UIAccessibilityTraitButton;
     } else {
         Entry *entry = [EntryController sharedInstance].entries[indexPath.row];
         cell.textLabel.text = entry.title;
+        if ([tableView isEditing] == YES) {
+            cell.textLabel.accessibilityTraits &= ~UIAccessibilityTraitButton;
+        } else {
+            cell.textLabel.accessibilityTraits |= UIAccessibilityTraitButton;
+        }
     }
-//    cell.textLabel.accessibilityTraits |= UIAccessibilityTraitButton;
     
     return cell;
 }
