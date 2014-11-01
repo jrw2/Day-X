@@ -57,19 +57,10 @@
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
-- (void)tableView:(UITableView *)tableViefw commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        Entry *entry = [EntryController sharedInstance].entries[indexPath.row];
-        [[EntryController sharedInstance] removeEntry:entry];
-        [self.tableView reloadData];
-    }
-}
-
 - (void)edit:(id)sender
 {
     [self.tableView setEditing:YES];
-    [self.tableView reloadData];
+//    [self.tableView reloadData];
     
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
     self.navigationItem.rightBarButtonItem = doneButton;
@@ -78,7 +69,7 @@
 - (void)done:(id)sender
 {
     [self.tableView setEditing:NO];
-    [self.tableView reloadData];
+//    [self.tableView reloadData];
     
     UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit:)];
     self.navigationItem.rightBarButtonItem = editButton;
