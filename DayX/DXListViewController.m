@@ -32,8 +32,7 @@
 
     self.title = @"DayX";
     
-    UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit:)];
-    self.navigationItem.rightBarButtonItem = editButton;
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.dataSource = [DXListTableViewDataSource new];
     
@@ -57,22 +56,11 @@
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
-- (void)edit:(id)sender
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
-    [self.tableView setEditing:YES];
-//    [self.tableView reloadData];
-    
-    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
-    self.navigationItem.rightBarButtonItem = doneButton;
-}
-
-- (void)done:(id)sender
-{
-    [self.tableView setEditing:NO];
-//    [self.tableView reloadData];
-    
-    UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit:)];
-    self.navigationItem.rightBarButtonItem = editButton;
+    [super setEditing:editing animated:animated];
+    [self.tableView setEditing:editing animated:animated];
+    [self.tableView reloadData];
 }
 
 @end

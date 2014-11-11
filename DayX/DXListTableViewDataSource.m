@@ -53,8 +53,10 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([UITableViewCell class])];
     
     if (indexPath.section == 0) {
-        cell.textLabel.text = @"Add Entry";
-        cell.textLabel.accessibilityTraits |= UIAccessibilityTraitButton;
+        if ([tableView isEditing] == NO) {
+            cell.textLabel.text = @"Add Entry";
+            cell.textLabel.accessibilityTraits |= UIAccessibilityTraitButton;
+        }
     } else {
         Entry *entry = [EntryController sharedInstance].entries[indexPath.row];
         cell.textLabel.text = entry.title;
