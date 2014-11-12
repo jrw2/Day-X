@@ -30,7 +30,7 @@
 {
     [super viewDidLoad];
 
-    self.title = @"DayX";
+    self.title = @"IdeaLog";
     
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
