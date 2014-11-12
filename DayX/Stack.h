@@ -2,8 +2,8 @@
 //  Stack.h
 //  Core Data Bank
 //
-//  Created by Joshua Howland on 6/12/14.
-//  Copyright (c) 2014 DevMountain. All rights reserved.
+//  Created by James Westmoreland on 9/16/14.
+//  Copyright (c) 2014 Custom Computers & Consulting. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

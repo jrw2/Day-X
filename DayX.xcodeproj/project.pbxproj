@@ -231,7 +231,7 @@
 			attributes = {
 				CLASSPREFIX = DX;
 				LastUpgradeCheck = 0510;
-				ORGANIZATIONNAME = DevMountain;
+				ORGANIZATIONNAME = "Custom Computers & Consulting";
 				TargetAttributes = {
 					711A506519388095005642EF = {
 						DevelopmentTeam = DYNAWMFG89;
