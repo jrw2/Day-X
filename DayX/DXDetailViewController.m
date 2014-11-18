@@ -12,11 +12,10 @@
 @interface DXDetailViewController () <UITextViewDelegate, UITextFieldDelegate>
 
 // Screen controls
-@property (strong, nonatomic) UILabel *dateInformation;
+@property (strong, nonatomic) UILabel *dateCreatedLabel;
+@property (strong, nonatomic) UILabel *dateModifiedLabel;
 @property (strong, nonatomic) UITextField *titleField;
 @property (strong, nonatomic) UITextView *textNote;
-@property (strong, nonatomic) UIButton *clearButton;
-@property (strong, nonatomic) UIButton *deleteButton;
 
 @property (strong, nonatomic) NSDate *dateCreated;
 @property (strong, nonatomic) NSDate *dateModified;
@@ -48,32 +47,21 @@
         self.dateModified = [NSDate new];
     }
     
-    self.dateInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 75, self.view.frame.size.width - 20, 44)];
-    if (self.entry) {
-        self.dateCreated = self.entry.dateCreated;
-        self.dateModified = self.entry.dateModified;
-        NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
-        NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
-        NSString *dateString = [[NSString alloc] initWithFormat:@"Date created: %@    Date Modified: %@", crDateStr, moDateStr];
-        self.dateInformation.text = dateString;
-    } else {
-        self.dateInformation.text = @"";
-    }
-    self.dateInformation.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:self.dateInformation];
-    
-    self.titleField = [[UITextField alloc] initWithFrame:CGRectMake(10, 130, self.view.frame.size.width - 20, 64)];
+    self.titleField = [UITextField new];
+    [self.titleField setTranslatesAutoresizingMaskIntoConstraints:NO];
     if (self.entry) {
         self.titleField.text = self.entry.title;
     } else {
         self.titleField.text = @"";
+        self.titleField.placeholder = @"Title";
     }
     self.titleField.returnKeyType = UIReturnKeyDone;
     self.titleField.backgroundColor = [UIColor whiteColor];
     self.titleField.delegate = self;
     [self.view addSubview:self.titleField];
     
-    self.textNote = [[UITextView alloc] initWithFrame:CGRectMake(10, 200, self.view.frame.size.width - 20, self.view.frame.size.height - 300)];
+    self.textNote = [UITextView new];
+    [self.textNote setTranslatesAutoresizingMaskIntoConstraints:NO];
     if (self.entry) {
         self.textNote.text = self.entry.text;
     } else {
@@ -83,21 +71,52 @@
     self.textNote.delegate = self;
     [self.view addSubview:self.textNote];
     
-    self.clearButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 150, self.view.frame.size.height - 75, 64, 64)];
-    [self.clearButton setTitle:@"Clear" forState:UIControlStateNormal];
-    [self.clearButton addTarget:self action:@selector(clear:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.clearButton];
-
-    self.deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 75, self.view.frame.size.height - 75, 64, 64)];
-    [self.deleteButton setTitle:@"Delete" forState:UIControlStateNormal];
-    [self.deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.deleteButton];
-
-    if (!self.entry) {
-        self.deleteButton.enabled = NO;
+    self.dateCreatedLabel = [UILabel new];
+    [self.dateCreatedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.dateModifiedLabel = [UILabel new];
+    [self.dateModifiedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    if (self.entry) {
+        self.dateCreated = self.entry.dateCreated;
+        NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
+        NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date created: %@", crDateStr];
+        self.dateCreatedLabel.text = dateStringCr;
+        
+        self.dateModified = self.entry.dateModified;
+        NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
+        NSString *dateStringMo = [[NSString alloc] initWithFormat:@"Date Modified: %@", moDateStr];
+        self.dateModifiedLabel.text = dateStringMo;
     } else {
-        self.clearButton.enabled = NO;
+        self.dateCreatedLabel.text = @"Date Created:";
+        self.dateModifiedLabel.text = @"Date Modified:";
     }
+    self.dateCreatedLabel.backgroundColor = [UIColor whiteColor];
+    self.dateModifiedLabel.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.dateCreatedLabel];
+    [self.view addSubview:self.dateModifiedLabel];
+    
+    NSDictionary* viewsDictionary = NSDictionaryOfVariableBindings(_titleField, _textNote, _dateCreatedLabel, _dateModifiedLabel);
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(margin)-[_titleField(==44)]-[_textNote]-[_dateCreatedLabel(==44)]-[_dateModifiedLabel(==44)]-(margin)-|" options:NSLayoutFormatAlignAllCenterX metrics:@{@"margin":@64} views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_titleField]-|" options:0 metrics:0 views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_textNote]-|" options:0 metrics:0 views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_dateCreatedLabel]-|" options:0 metrics:0 views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_dateModifiedLabel]-|" options:0 metrics:0 views:viewsDictionary]];
+    
+    self.navigationController.toolbarHidden = NO;
+    
+    UIBarButtonItem* clearButton = [[UIBarButtonItem alloc] initWithTitle:@"CLEAR" style:UIBarButtonItemStylePlain target:self action:@selector(clear:)];
+    
+    UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    
+    UIBarButtonItem* deleteButton = [[UIBarButtonItem alloc] initWithTitle:@"DELETE" style:UIBarButtonItemStylePlain target:self action:@selector(delete:)];
+    
+    if (!self.entry) {
+        deleteButton.enabled = NO;
+    } else {
+        clearButton.enabled = NO;
+    }
+    
+    [self setToolbarItems:@[clearButton, spaceItem, deleteButton]];
     
     [self showDoneButton:NO];
 }
@@ -121,9 +140,12 @@
     
     if (!self.entry) {
         NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
+        NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date created: %@", crDateStr];
+        self.dateCreatedLabel.text = dateStringCr;
+        
         NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
-        NSString *dateString = [[NSString alloc] initWithFormat:@"Date created: %@    Date Modified: %@", crDateStr, moDateStr];
-        self.dateInformation.text = dateString;
+        NSString *dateStringMo = [[NSString alloc] initWithFormat:@"Date Modified: %@", moDateStr];
+        self.dateModifiedLabel.text = dateStringMo;
     }
     
     [self showDoneButton:NO];
@@ -144,6 +166,9 @@
         self.dataHasChanged = YES;
     }
     
+    if (textView.text.length == 0) {
+        
+    }
     [self showDoneButton:NO];
     
     return YES;
@@ -158,6 +183,8 @@
 {
     self.titleField.text = @"";
     self.textNote.text = @"";
+    self.dateCreatedLabel.text = @"";
+    self.dateModifiedLabel.text = @"";
     self.dateCreated = [NSDate new];
     self.dateModified = [NSDate new];
 }
