@@ -65,15 +65,15 @@
     if (self.entry) {
         self.textNote.text = self.entry.text;
     } else {
-        self.textNote.text = @"";
+        self.textNote.text = @"Enter note(s).";
     }
     self.textNote.backgroundColor = [UIColor whiteColor];
     self.textNote.delegate = self;
     [self.view addSubview:self.textNote];
     
     self.dateCreatedLabel = [UILabel new];
-    [self.dateCreatedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.dateModifiedLabel = [UILabel new];
+    [self.dateCreatedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.dateModifiedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     if (self.entry) {
         self.dateCreated = self.entry.dateCreated;
@@ -96,11 +96,11 @@
     
     NSDictionary* viewsDictionary = NSDictionaryOfVariableBindings(_titleField, _textNote, _dateCreatedLabel, _dateModifiedLabel);
     
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(margin)-[_titleField(==44)]-[_textNote]-[_dateCreatedLabel(==44)]-[_dateModifiedLabel(==44)]-(margin)-|" options:NSLayoutFormatAlignAllCenterX metrics:@{@"margin":@64} views:viewsDictionary]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_titleField]-|" options:0 metrics:0 views:viewsDictionary]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_textNote]-|" options:0 metrics:0 views:viewsDictionary]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_dateCreatedLabel]-|" options:0 metrics:0 views:viewsDictionary]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_dateModifiedLabel]-|" options:0 metrics:0 views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-72-[_titleField(==44)]-[_textNote]-[_dateCreatedLabel(==44)]-[_dateModifiedLabel(==44)]-56-|" options:NSLayoutFormatAlignAllCenterX metrics:0 views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin)-[_titleField]-(margin)-|" options:0 metrics:@{@"margin":@8} views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin)-[_textNote]-(margin)-|" options:0 metrics:@{@"margin":@8} views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin)-[_dateCreatedLabel]-(margin)-|" options:0 metrics:@{@"margin":@8} views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin)-[_dateModifiedLabel]-(margin)-|" options:0 metrics:@{@"margin":@8} views:viewsDictionary]];
     
     self.navigationController.toolbarHidden = NO;
     
@@ -127,8 +127,10 @@
         UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(done:)];
         self.navigationItem.rightBarButtonItem = doneButton;
     } else {
-        UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
-        self.navigationItem.rightBarButtonItem = saveButton;
+        if (self.dataHasChanged) {
+            UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
+            self.navigationItem.rightBarButtonItem = saveButton;
+        }
     }
 }
 
@@ -136,16 +138,20 @@
 {
     [textField resignFirstResponder];
     
-    self.dataHasChanged = YES;
-    
     if (!self.entry) {
-        NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
-        NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date created: %@", crDateStr];
-        self.dateCreatedLabel.text = dateStringCr;
-        
-        NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
-        NSString *dateStringMo = [[NSString alloc] initWithFormat:@"Date Modified: %@", moDateStr];
-        self.dateModifiedLabel.text = dateStringMo;
+        if (self.titleField.text.length > 0) {
+            self.dataHasChanged = YES;
+            
+            NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
+            NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date Created: %@", crDateStr];
+            self.dateCreatedLabel.text = dateStringCr;
+            
+            NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
+            NSString *dateStringMo = [[NSString alloc] initWithFormat:@"Date Modified: %@", moDateStr];
+            self.dateModifiedLabel.text = dateStringMo;
+        }
+    } else {
+        self.dataHasChanged  = YES;
     }
     
     [self showDoneButton:NO];
@@ -155,6 +161,10 @@
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
+    if (!self.entry) {
+        self.textNote.text = @"";
+    }
+    
     [self showDoneButton:YES];
     
     return YES;
@@ -164,11 +174,15 @@
 {
     if (self.entry) {
         self.dataHasChanged = YES;
+    } else {
+        if (textView.text.length == 0) {
+            self.textNote.text = @"Enter note(s).";
+            self.dataHasChanged = NO;
+        } else {
+            self.dataHasChanged = YES;
+        }
     }
     
-    if (textView.text.length == 0) {
-        
-    }
     [self showDoneButton:NO];
     
     return YES;
@@ -182,11 +196,14 @@
 - (void)clear:(id *)sender
 {
     self.titleField.text = @"";
-    self.textNote.text = @"";
-    self.dateCreatedLabel.text = @"";
-    self.dateModifiedLabel.text = @"";
+    self.titleField.placeholder = @"Title";
+    self.textNote.text = @"Enter Note(s).";
+    self.dateCreatedLabel.text = @"Date Created:";
+    self.dateModifiedLabel.text = @"Date Modified:";
     self.dateCreated = [NSDate new];
     self.dateModified = [NSDate new];
+    self.dataHasChanged = NO;
+    [self showDoneButton:NO];
 }
 
 - (void)delete:(id)sender
