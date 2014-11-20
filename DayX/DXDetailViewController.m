@@ -21,7 +21,8 @@
 @property (strong, nonatomic) NSDate *dateModified;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 
-@property (readwrite, nonatomic) BOOL dataHasChanged;
+@property (readwrite, nonatomic) BOOL titleDataHasChanged;
+@property (readwrite, nonatomic) BOOL noteDataHasChanged;
 
 @property (strong, nonatomic) Entry *entry;
 
@@ -35,7 +36,8 @@
     
     self.view.backgroundColor = [UIColor darkGrayColor];
     
-    self.dataHasChanged = NO;
+    self.titleDataHasChanged = NO;
+    self.noteDataHasChanged = NO;
     
     if (!self.dateFormatter) {
         self.dateFormatter = [NSDateFormatter new];
@@ -127,10 +129,19 @@
         UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(done:)];
         self.navigationItem.rightBarButtonItem = doneButton;
     } else {
-        if (self.dataHasChanged) {
-            UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
-            self.navigationItem.rightBarButtonItem = saveButton;
+        if (self.entry) {
+            if (!(self.titleDataHasChanged || self.noteDataHasChanged)) {
+                self.navigationItem.rightBarButtonItem = nil;
+                return;
+            }
+        } else {
+            if (!self.titleDataHasChanged) {
+                self.navigationItem.rightBarButtonItem = nil;
+                return;
+            }
         }
+        UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
+        self.navigationItem.rightBarButtonItem = saveButton;
     }
 }
 
@@ -140,7 +151,7 @@
     
     if (!self.entry) {
         if (self.titleField.text.length > 0) {
-            self.dataHasChanged = YES;
+            self.titleDataHasChanged = YES;
             
             NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
             NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date Created: %@", crDateStr];
@@ -151,7 +162,7 @@
             self.dateModifiedLabel.text = dateStringMo;
         }
     } else {
-        self.dataHasChanged  = YES;
+        self.titleDataHasChanged  = YES;
     }
     
     [self showDoneButton:NO];
@@ -173,13 +184,13 @@
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
     if (self.entry) {
-        self.dataHasChanged = YES;
+        self.noteDataHasChanged = YES;
     } else {
         if (textView.text.length == 0) {
             self.textNote.text = @"Enter note(s).";
-            self.dataHasChanged = NO;
+            self.noteDataHasChanged = NO;
         } else {
-            self.dataHasChanged = YES;
+            self.noteDataHasChanged = YES;
         }
     }
     
@@ -202,7 +213,8 @@
     self.dateModifiedLabel.text = @"Date Modified:";
     self.dateCreated = [NSDate new];
     self.dateModified = [NSDate new];
-    self.dataHasChanged = NO;
+    self.titleDataHasChanged = NO;
+    self.noteDataHasChanged = NO;
     [self showDoneButton:NO];
 }
 
@@ -228,7 +240,7 @@
 
 - (void)save:(id)sender
 {
-    if (self.dataHasChanged) {
+    if (self.titleDataHasChanged || self.noteDataHasChanged) {
         self.dateModified = [NSDate new];
         if (self.entry) {
             self.entry.title = self.titleField.text;
