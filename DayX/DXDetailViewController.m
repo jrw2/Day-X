@@ -55,7 +55,7 @@
         self.titleField.text = self.entry.title;
     } else {
         self.titleField.text = @"";
-        self.titleField.placeholder = @"Title";
+        self.titleField.placeholder = @"Enter title here (Required)";
     }
     self.titleField.returnKeyType = UIReturnKeyDone;
     self.titleField.backgroundColor = [UIColor whiteColor];
@@ -67,7 +67,7 @@
     if (self.entry) {
         self.textNote.text = self.entry.text;
     } else {
-        self.textNote.text = @"Enter note(s).";
+        self.textNote.text = @"Enter note(s) here.";
     }
     self.textNote.backgroundColor = [UIColor whiteColor];
     self.textNote.delegate = self;
@@ -149,6 +149,15 @@
 {
     [textField resignFirstResponder];
     
+    [self titleFieldValidate];
+    
+    [self showDoneButton:NO];
+    
+    return YES;
+}
+
+- (void)titleFieldValidate
+{
     if (!self.entry) {
         if (self.titleField.text.length > 0) {
             self.titleDataHasChanged = YES;
@@ -164,8 +173,15 @@
     } else {
         self.titleDataHasChanged  = YES;
     }
+}
+
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+{
+    if ([textField isFirstResponder]) {
+        [textField resignFirstResponder];
+    }
     
-    [self showDoneButton:NO];
+    [self titleFieldValidate];
     
     return YES;
 }
@@ -202,6 +218,8 @@
 - (void)done:(id *)sender
 {
     [self.textNote resignFirstResponder];
+    
+    [self showDoneButton:NO];
 }
 
 - (void)clear:(id *)sender
