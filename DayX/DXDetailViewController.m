@@ -199,20 +199,29 @@
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
+    if ([textView isFirstResponder]) {
+        [textView resignFirstResponder];
+    }
+    
+    [self textNoteValidate];
+    
+    [self showDoneButton:NO];
+    
+    return YES;
+}
+
+- (void)textNoteValidate
+{
     if (self.entry) {
         self.noteDataHasChanged = YES;
     } else {
-        if (textView.text.length == 0) {
-            self.textNote.text = @"Enter note(s).";
+        if (self.textNote.text.length == 0) {
+            self.textNote.text = @"Enter note(s) here.";
             self.noteDataHasChanged = NO;
         } else {
             self.noteDataHasChanged = YES;
         }
     }
-    
-    [self showDoneButton:NO];
-    
-    return YES;
 }
 
 - (void)done:(id *)sender
