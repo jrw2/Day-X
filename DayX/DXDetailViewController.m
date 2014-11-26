@@ -41,7 +41,7 @@
     
     if (!self.dateFormatter) {
         self.dateFormatter = [NSDateFormatter new];
-        self.dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss zzz";
+        self.dateFormatter.dateFormat = @"MM-dd-yyyy HH:mm:ss zzz";
     }
     
     if (!self.entry) {
@@ -51,6 +51,7 @@
     
     self.titleField = [UITextField new];
     [self.titleField setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.titleField.layer.cornerRadius = 10;
     if (self.entry) {
         self.titleField.text = self.entry.title;
     } else {
@@ -64,6 +65,7 @@
     
     self.textNote = [UITextView new];
     [self.textNote setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.textNote.layer.cornerRadius = 10;
     if (self.entry) {
         self.textNote.text = self.entry.text;
     } else {
@@ -77,6 +79,8 @@
     self.dateModifiedLabel = [UILabel new];
     [self.dateCreatedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.dateModifiedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.dateCreatedLabel.layer.cornerRadius = 10;
+    self.dateModifiedLabel.layer.cornerRadius = 10;
     if (self.entry) {
         self.dateCreated = self.entry.dateCreated;
         NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
