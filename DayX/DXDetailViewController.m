@@ -52,27 +52,27 @@
     self.titleField = [UITextField new];
     [self.titleField setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.titleField.layer.cornerRadius = 10;
+    self.titleField.backgroundColor = [[UIColor alloc] initWithRed:1.0 green:0.88 blue:0.54 alpha:1.0];
+    self.titleField.returnKeyType = UIReturnKeyDone;
+    self.titleField.delegate = self;
     if (self.entry) {
         self.titleField.text = self.entry.title;
     } else {
         self.titleField.text = @"";
         self.titleField.placeholder = @"Enter title here (Required)";
     }
-    self.titleField.returnKeyType = UIReturnKeyDone;
-    self.titleField.backgroundColor = [UIColor whiteColor];
-    self.titleField.delegate = self;
     [self.view addSubview:self.titleField];
     
     self.textNote = [UITextView new];
     [self.textNote setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.textNote.layer.cornerRadius = 10;
+    self.textNote.backgroundColor = [[UIColor alloc] initWithRed:1.0 green:0.88 blue:0.54 alpha:1.0];
+    self.textNote.delegate = self;
     if (self.entry) {
         self.textNote.text = self.entry.text;
     } else {
         self.textNote.text = @"Enter note(s) here.";
     }
-    self.textNote.backgroundColor = [UIColor whiteColor];
-    self.textNote.delegate = self;
     [self.view addSubview:self.textNote];
     
     self.dateCreatedLabel = [UILabel new];
@@ -81,6 +81,8 @@
     [self.dateModifiedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.dateCreatedLabel.layer.cornerRadius = 10;
     self.dateModifiedLabel.layer.cornerRadius = 10;
+    self.dateCreatedLabel.backgroundColor = [UIColor grayColor];
+    self.dateModifiedLabel.backgroundColor = [UIColor grayColor];
     if (self.entry) {
         self.dateCreated = self.entry.dateCreated;
         NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
@@ -95,8 +97,6 @@
         self.dateCreatedLabel.text = @"Date Created:";
         self.dateModifiedLabel.text = @"Date Modified:";
     }
-    self.dateCreatedLabel.backgroundColor = [UIColor whiteColor];
-    self.dateModifiedLabel.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.dateCreatedLabel];
     [self.view addSubview:self.dateModifiedLabel];
     
