@@ -8,6 +8,7 @@
 
 #import "DXDetailViewController.h"
 #import "EntryController.h"
+#import "DXPrintPageRenderer.h"
 
 @interface DXDetailViewController () <UITextViewDelegate, UITextFieldDelegate>
 
@@ -16,6 +17,7 @@
 @property (strong, nonatomic) UILabel *dateModifiedLabel;
 @property (strong, nonatomic) UITextField *titleField;
 @property (strong, nonatomic) UITextView *textNote;
+@property (nonatomic, strong) UIBarButtonItem *printButton;
 
 @property (strong, nonatomic) NSDate *dateCreated;
 @property (strong, nonatomic) NSDate *dateModified;
@@ -88,7 +90,6 @@
         NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
         NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date created: %@", crDateStr];
         self.dateCreatedLabel.text = dateStringCr;
-        
         self.dateModified = self.entry.dateModified;
         NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
         NSString *dateStringMo = [[NSString alloc] initWithFormat:@"Date Modified: %@", moDateStr];
@@ -101,7 +102,6 @@
     [self.view addSubview:self.dateModifiedLabel];
     
     NSDictionary* viewsDictionary = NSDictionaryOfVariableBindings(_titleField, _textNote, _dateCreatedLabel, _dateModifiedLabel);
-    
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-72-[_titleField(==44)]-[_textNote]-[_dateCreatedLabel(==44)]-[_dateModifiedLabel(==44)]-56-|" options:NSLayoutFormatAlignAllCenterX metrics:0 views:viewsDictionary]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin)-[_titleField]-(margin)-|" options:0 metrics:@{@"margin":@8} views:viewsDictionary]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin)-[_textNote]-(margin)-|" options:0 metrics:@{@"margin":@8} views:viewsDictionary]];
@@ -109,20 +109,20 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin)-[_dateModifiedLabel]-(margin)-|" options:0 metrics:@{@"margin":@8} views:viewsDictionary]];
     
     self.navigationController.toolbarHidden = NO;
-    
     UIBarButtonItem* clearButton = [[UIBarButtonItem alloc] initWithTitle:@"CLEAR" style:UIBarButtonItemStylePlain target:self action:@selector(clear:)];
-    
     UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-    
     UIBarButtonItem* deleteButton = [[UIBarButtonItem alloc] initWithTitle:@"DELETE" style:UIBarButtonItemStylePlain target:self action:@selector(delete:)];
-    
     if (!self.entry) {
         deleteButton.enabled = NO;
     } else {
         clearButton.enabled = NO;
     }
-    
-    [self setToolbarItems:@[clearButton, spaceItem, deleteButton]];
+    if ([UIPrintInteractionController isPrintingAvailable]) {
+        self.printButton = [[UIBarButtonItem alloc] initWithTitle:@"Print" style:UIBarButtonItemStylePlain target:self action:@selector(print:)];
+        [self setToolbarItems:@[clearButton, spaceItem, deleteButton, spaceItem, self.printButton]];
+    } else {
+        [self setToolbarItems:@[clearButton, spaceItem, deleteButton]];
+    }
     
     [self showDoneButton:NO];
 }
@@ -165,11 +165,9 @@
     if (!self.entry) {
         if (self.titleField.text.length > 0) {
             self.titleDataHasChanged = YES;
-            
             NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
             NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date Created: %@", crDateStr];
             self.dateCreatedLabel.text = dateStringCr;
-            
             NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
             NSString *dateStringMo = [[NSString alloc] initWithFormat:@"Date Modified: %@", moDateStr];
             self.dateModifiedLabel.text = dateStringMo;
@@ -289,6 +287,66 @@
 - (void)updateWithEntry:(Entry *)entry
 {
     self.entry = entry;
+}
+
+#pragma mark - Printing
+
+- (void)print:(id)sender
+{
+    UIPrintInteractionController *controller = [UIPrintInteractionController sharedPrintController];
+    if (!controller) {
+        NSLog(@"Couldn't get shared UIPrintInteractionController!");
+        return;
+    }
+    
+    UIPrintInteractionCompletionHandler completionHandler =
+    ^(UIPrintInteractionController *printController, BOOL completed, NSError *error) {
+        if (!completed && error) {
+            NSLog(@"FAILED! due to error in domain %@ with error code %u", error.domain, (unsigned int)error.code);
+        }
+    };
+    
+    // Obtain a printInfo so that we can set our printing defaults.
+    UIPrintInfo *printInfo = [UIPrintInfo printInfo];
+    // This application produces General content that contains color.
+    printInfo.outputType = UIPrintInfoOutputGeneral;
+    // We'll use the application name as the job name.
+    printInfo.jobName = @"IdeaLog";
+    // Set duplex so that it is available if the printer supports it. We are
+    // performing portrait printing so we want to duplex along the long edge.
+    printInfo.duplex = UIPrintInfoDuplexLongEdge;
+    // Use this printInfo for this print job.
+    controller.printInfo = printInfo;
+    
+    // Be sure the page range controls are present for documents of > 1 page.
+    controller.showsPageRange = YES;
+    
+    // This code uses a custom UIPrintPageRenderer so that it can draw a header and footer.
+    DXPrintPageRenderer *printRenderer = [[DXPrintPageRenderer alloc] init];
+    // The DX PrintPageRenderer class provides a jobtitle that it will label each page with.
+    printRenderer.jobTitle = self.titleField.text;
+    // To draw the content of each page, a UIViewPrintFormatter is used.
+//    UIViewPrintFormatter *viewFormatter = [self.textNote viewPrintFormatter];
+    
+#if SIMPLE_LAYOUT
+    UIFont *font = [UIFont fontWithName:@"Helvetica" size:HEADER_FOOTER_TEXT_HEIGHT];
+    CGSize titleSize = [printRenderer.jobTitle sizeWithFont:font];
+    printRenderer.headerHeight = printRenderer.footerHeight = titleSize.height + HEADER_FOOTER_MARGIN_PADDING;
+#endif
+//    [printRenderer addPrintFormatter:viewFormatter startingAtPageAtIndex:0];
+    [printRenderer addPrintFormatter:[self.titleField viewPrintFormatter] startingAtPageAtIndex:0];
+    [printRenderer addPrintFormatter:[self.textNote viewPrintFormatter] startingAtPageAtIndex:0];
+    [printRenderer addPrintFormatter:[self.dateCreatedLabel viewPrintFormatter] startingAtPageAtIndex:0];
+    [printRenderer addPrintFormatter:[self.dateModifiedLabel viewPrintFormatter] startingAtPageAtIndex:0];
+    // Set our custom renderer as the printPageRenderer for the print job.
+    controller.printPageRenderer = printRenderer;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [controller presentFromBarButtonItem:self.printButton animated:YES completionHandler:completionHandler];  // iPad
+    }
+    else {
+        [controller presentAnimated:YES completionHandler:completionHandler];  // iPhone
+    }
 }
 
 @end
