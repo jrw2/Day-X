@@ -78,27 +78,31 @@
     [self.view addSubview:self.textNote];
     
     self.dateCreatedLabel = [UILabel new];
-    self.dateModifiedLabel = [UILabel new];
     [self.dateCreatedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [self.dateModifiedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.dateCreatedLabel.layer.cornerRadius = 10;
-    self.dateModifiedLabel.layer.cornerRadius = 10;
-    self.dateCreatedLabel.backgroundColor = [UIColor grayColor];
-    self.dateModifiedLabel.backgroundColor = [UIColor grayColor];
+    self.dateCreatedLabel.backgroundColor = [UIColor darkGrayColor];
     if (self.entry) {
         self.dateCreated = self.entry.dateCreated;
         NSString *crDateStr = [self.dateFormatter stringFromDate:self.dateCreated];
         NSString *dateStringCr = [[NSString alloc] initWithFormat:@"Date created: %@", crDateStr];
         self.dateCreatedLabel.text = dateStringCr;
+    } else {
+        self.dateCreatedLabel.text = @"Date Created:";
+    }
+    [self.view addSubview:self.dateCreatedLabel];
+    
+    self.dateModifiedLabel = [UILabel new];
+    [self.dateModifiedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.dateModifiedLabel.layer.cornerRadius = 10;
+    self.dateModifiedLabel.backgroundColor = [UIColor darkGrayColor];
+    if (self.entry) {
         self.dateModified = self.entry.dateModified;
         NSString *moDateStr = [self.dateFormatter stringFromDate:self.dateModified];
         NSString *dateStringMo = [[NSString alloc] initWithFormat:@"Date Modified: %@", moDateStr];
         self.dateModifiedLabel.text = dateStringMo;
     } else {
-        self.dateCreatedLabel.text = @"Date Created:";
         self.dateModifiedLabel.text = @"Date Modified:";
     }
-    [self.view addSubview:self.dateCreatedLabel];
     [self.view addSubview:self.dateModifiedLabel];
     
     NSDictionary* viewsDictionary = NSDictionaryOfVariableBindings(_titleField, _textNote, _dateCreatedLabel, _dateModifiedLabel);
@@ -236,14 +240,15 @@
 - (void)clear:(id *)sender
 {
     self.titleField.text = @"";
-    self.titleField.placeholder = @"Title";
-    self.textNote.text = @"Enter Note(s).";
+    self.titleField.placeholder = @"Enter title here (Required)";
+    self.textNote.text = @"Enter note(s) here.";
     self.dateCreatedLabel.text = @"Date Created:";
     self.dateModifiedLabel.text = @"Date Modified:";
     self.dateCreated = [NSDate new];
     self.dateModified = [NSDate new];
     self.titleDataHasChanged = NO;
     self.noteDataHasChanged = NO;
+    
     [self showDoneButton:NO];
 }
 
@@ -289,7 +294,7 @@
     self.entry = entry;
 }
 
-#pragma mark - Printing
+    #pragma mark - Printing
 
 - (void)print:(id)sender
 {
